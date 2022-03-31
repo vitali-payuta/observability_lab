@@ -1,0 +1,37 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.define "ldap-server" do |nodebalance|
+    nodebalance.vm.box = "centos/7"
+    nodebalance.vm.network "private_network", ip: "192.168.85.11"
+    nodebalance.vm.synced_folder "D:/vagrant/ldap", "/vagrant"
+
+    nodebalance.vm.provider "virtualbox" do |vc|
+      vc.name = "ldap-server"
+      vc.memory = "2048"
+      vc.cpus = 2
+    end
+
+    nodebalance.vm.provision "shell", inline: <<-SHELL
+    /vagrant/server.sh
+    SHELL
+  end
+
+
+  config.vm.define "ldap-client" do |node1|
+    node1.vm.box = "centos/7"
+    node1.vm.network "private_network", ip: "192.168.85.10"
+    node1.vm.synced_folder "D:/vagrant/ldap", "/vagrant"
+
+    node1.vm.provider "virtualbox" do |va|
+        va.name = "ldap-client"
+        va.memory = "2048"
+    end
+
+    node1.vm.provision "shell", inline: <<-SHELL
+    /vagrant/client.sh
+    SHELL
+  end  
+end
+
